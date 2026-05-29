@@ -34,7 +34,25 @@ export default function FeedPage() {
   const [locationError, setLocationError] = useState<string | null>(null)
   const [userLat, setUserLat] = useState<number | null>(null)
   const [userLng, setUserLng] = useState<number | null>(null)
+  const [locationName, setLocationName] = useState<string | null>(null)
   const [radius, setRadius] = useState(25)
+
+  async function reverseGeocode(lat: number, lng: number): Promise<string | null> {
+    try {
+      const res = await fetch(
+        `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json&accept-language=fr`,
+      )
+      if (!res.ok) return null
+      const data = await res.json()
+      const a = data.address ?? {}
+      const neighbourhood = a.neighbourhood ?? a.suburb ?? a.city_district ?? a.quarter
+      const city = a.city ?? a.town ?? a.village ?? a.municipality
+      if (neighbourhood && city) return `${neighbourhood}, ${city}`
+      return neighbourhood ?? city ?? null
+    } catch {
+      return null
+    }
+  }
 
   function enableLocation() {
     if (!navigator.geolocation) {
@@ -51,11 +69,13 @@ export default function FeedPage() {
         setUserLng(lng)
         setLocationActive(true)
         setLocationLoading(false)
+        const name = await reverseGeocode(lat, lng)
+        setLocationName(name)
         if (currentUser) {
           try {
             await userService.updateLocation(currentUser.user_id, { latitude: lat, longitude: lng })
           } catch {
-            // non-fatal — location display still works
+            // non-fatal
           }
         }
       },
@@ -71,6 +91,7 @@ export default function FeedPage() {
     setLocationActive(false)
     setUserLat(null)
     setUserLng(null)
+    setLocationName(null)
     setLocationError(null)
     if (sort === 'closest') setSort('hot')
   }
@@ -121,19 +142,23 @@ export default function FeedPage() {
       )}
 
       {locationActive && userLat != null && (
-        <div className="bg-[#1a1a1b] border border-[#343536] rounded-md px-4 py-3 flex items-center gap-4">
+        <div className="bg-[#1a1a1b] border border-[#343536] rounded-md px-4 py-3 flex items-center gap-3">
           <MapPinIcon className="w-4 h-4 text-orange-400 shrink-0" />
-          <span className="text-xs text-orange-300 shrink-0">
-            {userLat.toFixed(4)}, {userLng?.toFixed(4)}
-          </span>
-          <span className="text-xs text-[#818384] shrink-0">Radius</span>
+          <div className="flex flex-col min-w-0 shrink-0">
+            <span className="text-xs font-medium text-orange-300 leading-tight">
+              {locationName ?? 'Ma position'}
+            </span>
+            <span className="text-[10px] text-[#818384] leading-tight">
+              dans un rayon de
+            </span>
+          </div>
           <input
             type="range" min={5} max={100} step={5} value={radius}
             onChange={e => { setRadius(Number(e.target.value)); setVisible(PAGE_SIZE) }}
             className="flex-1 accent-orange-500"
           />
-          <span className="text-xs font-semibold text-white w-14 shrink-0">{radius} km</span>
-          <button onClick={disableLocation} className="text-[#818384] hover:text-white transition-colors">
+          <span className="text-xs font-semibold text-white w-12 shrink-0 text-right">{radius} km</span>
+          <button onClick={disableLocation} className="text-[#818384] hover:text-white transition-colors ml-1">
             <XMarkIcon className="w-4 h-4" />
           </button>
         </div>

@@ -17,6 +17,7 @@ export default function CreatePostModal({ onClose }: Props) {
   const [tagLocation, setTagLocation] = useState(false)
   const [locLat, setLocLat] = useState<number | null>(null)
   const [locLng, setLocLng] = useState<number | null>(null)
+  const [locName, setLocName] = useState<string | null>(null)
   const [locLoading, setLocLoading] = useState(false)
   const [locError, setLocError] = useState<string | null>(null)
   const [error, setError] = useState('')
@@ -29,11 +30,27 @@ export default function CreatePostModal({ onClose }: Props) {
     return () => window.removeEventListener('keydown', onKey)
   }, [onClose])
 
+  async function reverseGeocode(lat: number, lng: number): Promise<string | null> {
+    try {
+      const res = await fetch(
+        `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json&accept-language=fr`,
+        { headers: { 'Accept-Language': 'fr' } },
+      )
+      if (!res.ok) return null
+      const data = await res.json()
+      const a = data.address ?? {}
+      return a.neighbourhood ?? a.suburb ?? a.city_district ?? a.quarter ?? a.city ?? null
+    } catch {
+      return null
+    }
+  }
+
   function toggleLocation() {
     if (tagLocation) {
       setTagLocation(false)
       setLocLat(null)
       setLocLng(null)
+      setLocName(null)
       setLocError(null)
       return
     }
@@ -44,10 +61,14 @@ export default function CreatePostModal({ onClose }: Props) {
     setLocLoading(true)
     setLocError(null)
     navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        setLocLat(pos.coords.latitude)
-        setLocLng(pos.coords.longitude)
+      async (pos) => {
+        const lat = pos.coords.latitude
+        const lng = pos.coords.longitude
+        setLocLat(lat)
+        setLocLng(lng)
         setTagLocation(true)
+        const name = await reverseGeocode(lat, lng)
+        setLocName(name)
         setLocLoading(false)
       },
       (err) => {
@@ -73,6 +94,7 @@ export default function CreatePostModal({ onClose }: Props) {
         `${body.trim()}${imageLine}`.trim(),
         tagLocation && locLat != null ? locLat : undefined,
         tagLocation && locLng != null ? locLng : undefined,
+        tagLocation && locName ? locName : undefined,
       )
       onClose()
     } catch (err) {
@@ -144,7 +166,7 @@ export default function CreatePostModal({ onClose }: Props) {
               <MapPinIcon className={`w-4 h-4 shrink-0 ${tagLocation ? 'text-orange-400' : 'text-[#818384]'}`} />
               <span className="text-xs text-[#d7dadc] truncate">
                 {tagLocation && locLat != null
-                  ? `${locLat.toFixed(4)}, ${locLng?.toFixed(4)}`
+                  ? (locName ?? `${locLat.toFixed(4)}, ${locLng?.toFixed(4)}`)
                   : 'Tag my location'}
               </span>
               {locError && <span className="text-xs text-red-400 truncate">{locError}</span>}

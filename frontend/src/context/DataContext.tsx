@@ -20,7 +20,7 @@ interface DataContextType {
   setSort: (sort: BackendSortStrategy) => void
   refreshAll: () => Promise<void>
   refreshFeed: () => Promise<void>
-  addPost: (subredditId: number, title: string, content: string, latitude?: number, longitude?: number) => Promise<Post>
+  addPost: (subredditId: number, title: string, content: string, latitude?: number, longitude?: number, locationName?: string) => Promise<Post>
   addSubreddit: (name: string, description: string) => Promise<Subreddit>
   votePost: (postId: number, direction: 'up' | 'down' | 'remove') => Promise<void>
   subscribe: (subredditId: number) => Promise<void>
@@ -45,37 +45,32 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
   const subredditById = useMemo(() => new Map(subreddits.map(sub => [sub.subreddit_id, sub])), [subreddits])
 
   const refreshFeed = useCallback(async () => {
-    if (!currentUser) {
-      setPosts([])
-      return
-    }
-    const nextPosts = await postService.getFeed(currentUser.user_id, sort, 100)
+    const nextPosts = await postService.getFeed(currentUser?.user_id, sort, 100)
     setPosts(nextPosts)
   }, [currentUser, sort])
 
   const refreshAll = useCallback(async () => {
     setLoading(true)
     try {
-      const [nextUsers, nextSubreddits] = await Promise.all([
+      const [nextUsers, nextSubreddits, nextPosts] = await Promise.all([
         userService.getAll(),
         subredditService.getAll(),
+        postService.getFeed(currentUser?.user_id, sort, 100),
       ])
       setUsers(nextUsers)
       setSubreddits(nextSubreddits)
+      setPosts(nextPosts)
 
       if (currentUser) {
-        const [nextPosts, nextRecommendations, nextStats, nextSubIds] = await Promise.all([
-          postService.getFeed(currentUser.user_id, sort, 100),
+        const [nextRecommendations, nextStats, nextSubIds] = await Promise.all([
           subredditService.recommendations(currentUser.user_id),
           userService.getStats(currentUser.user_id),
           userService.getSubscribedIds(currentUser.user_id),
         ])
-        setPosts(nextPosts)
         setRecommendations(nextRecommendations)
         setStats(nextStats)
         setSubscribedIds(new Set(nextSubIds))
       } else {
-        setPosts([])
         setRecommendations([])
         setStats(null)
         setSubscribedIds(new Set())
@@ -93,9 +88,9 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
     refreshAll()
   }, [refreshAll])
 
-  async function addPost(subredditId: number, title: string, content: string, latitude?: number, longitude?: number) {
+  async function addPost(subredditId: number, title: string, content: string, latitude?: number, longitude?: number, locationName?: string) {
     if (!currentUser) throw new Error('Log in before creating a post.')
-    const post = await postService.create(currentUser.user_id, subredditId, title, content, latitude, longitude)
+    const post = await postService.create(currentUser.user_id, subredditId, title, content, latitude, longitude, locationName)
     await refreshAll()
     return post
   }
