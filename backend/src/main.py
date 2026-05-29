@@ -7,7 +7,8 @@ from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from src.auth.router import router as auth_router
 from src.comments.router import router as comments_router
 from src.core.config import get_settings
-from src.core.database import load_dummy_data
+from src.core.db import engine
+from src.core.models import Base
 from src.posts.router import router as posts_router
 from src.search.router import router as search_router
 from src.subreddits.router import router as subreddits_router
@@ -16,7 +17,7 @@ from src.users.router import router as users_router
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    load_dummy_data()
+    Base.metadata.create_all(bind=engine)
     yield
 
 

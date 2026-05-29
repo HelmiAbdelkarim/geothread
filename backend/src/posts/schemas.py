@@ -10,6 +10,7 @@ class PostCreateRequest(BaseModel):
     content: str = Field("", max_length=40000)
     latitude: Optional[float] = Field(default=None, ge=-90, le=90)
     longitude: Optional[float] = Field(default=None, ge=-180, le=180)
+    location_name: Optional[str] = Field(default=None, max_length=100)
 
     @model_validator(mode="after")
     def validate_coordinates(self):
@@ -35,6 +36,7 @@ class PostResponse(BaseModel):
     share_count: int = 0
     latitude: Optional[float] = None
     longitude: Optional[float] = None
+    location_name: Optional[str] = None
 
     class Config:
         from_attributes = True

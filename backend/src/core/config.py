@@ -1,7 +1,6 @@
 from functools import lru_cache
 from typing import List
 
-from pydantic import computed_field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -21,11 +20,6 @@ class Settings(BaseSettings):
     DB_HOST: str
     DB_PORT: int
     DB_NAME: str
-
-    @computed_field
-    @property
-    def database_url(self) -> str:
-        return f"postgresql+asyncpg://{self.DB_USER}:{self.DB_PASSWORD}@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}"
 
     LOCATION_DECAY_KM: float
     BACKEND_CORS_ORIGINS: List[str]

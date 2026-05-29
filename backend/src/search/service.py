@@ -1,14 +1,23 @@
-from src.core.database import Post, Redditor, Subreddit, reddit_db
+from typing import List
+
+from sqlalchemy.orm import Session
+
+from src.core.models import PostModel, SubredditModel, UserModel
 
 
-def search_posts(query: str, limit: int) -> list[Post]:
-    return reddit_db.search_posts(query, limit)
+def search_posts(db: Session, query: str, limit: int) -> List[PostModel]:
+    pattern = f"%{query}%"
+    return db.query(PostModel).filter(
+        PostModel.title.ilike(pattern) | PostModel.content.ilike(pattern)
+    ).limit(limit).all()
 
 
-def search_subreddits(query: str, limit: int) -> list[Subreddit]:
-    return reddit_db.search_subreddits(query, limit)
+def search_subreddits(db: Session, query: str, limit: int) -> List[SubredditModel]:
+    pattern = f"%{query}%"
+    return db.query(SubredditModel).filter(
+        SubredditModel.name.ilike(pattern) | SubredditModel.description.ilike(pattern)
+    ).limit(limit).all()
 
 
-def search_users(query: str, limit: int) -> list[Redditor]:
-    return reddit_db.search_users(query, limit)
-
+def search_users(db: Session, query: str, limit: int) -> List[UserModel]:
+    return db.query(UserModel).filter(UserModel.username.ilike(f"%{query}%")).limit(limit).all()
