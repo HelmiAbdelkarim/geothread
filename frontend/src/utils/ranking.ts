@@ -39,10 +39,10 @@ export function sortPosts(
       case 'rising':        priority = risingScore(p); break
       case 'controversial': priority = controversialScore(p); break
       case 'closest': {
-        if (userLat == null || userLng == null || p.lat == null || p.lng == null) {
+        if (userLat == null || userLng == null || p.latitude == null || p.longitude == null) {
           priority = -Infinity
         } else {
-          priority = -haversine(userLat, userLng, p.lat, p.lng)
+          priority = -haversine(userLat, userLng, p.latitude, p.longitude)
         }
         break
       }

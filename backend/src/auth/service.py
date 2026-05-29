@@ -1,13 +1,20 @@
+from datetime import datetime
 from typing import Optional
 
-from src.core.database import Redditor, reddit_db
+from sqlalchemy.orm import Session
+
+from src.core.models import UserModel
 
 
-def register(username: str, email: str, sort: Optional[str] = "hot") -> Optional[Redditor]:
-    if reddit_db.get_user_by_username(username):
+def register(db: Session, username: str, email: str) -> Optional[UserModel]:
+    if db.query(UserModel).filter(UserModel.username == username).first():
         return None
-    return reddit_db.create_user(username=username, email=email, sort=sort)
+    user = UserModel(username=username, email=email, created_at=datetime.now())
+    db.add(user)
+    db.commit()
+    db.refresh(user)
+    return user
 
 
-def get_by_username(username: str) -> Optional[Redditor]:
-    return reddit_db.get_user_by_username(username)
+def get_by_username(db: Session, username: str) -> Optional[UserModel]:
+    return db.query(UserModel).filter(UserModel.username == username).first()

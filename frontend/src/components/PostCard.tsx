@@ -84,12 +84,16 @@ export default function PostCard({ post, onClick, distanceKm }: Props) {
             </span>
             <span>•</span>
             <span>{timeAgo(post.timestamp)}</span>
-            {distanceKm != null && (
+            {(distanceKm != null || post.location_name) && (
               <>
                 <span>•</span>
                 <span className="flex items-center gap-0.5 text-orange-500 font-medium">
                   <MapPinIcon className="w-3 h-3" />
-                  {formatDistance(distanceKm)}
+                  {post.location_name
+                    ? distanceKm != null
+                      ? `${post.location_name} · ${formatDistance(distanceKm)}`
+                      : post.location_name
+                    : formatDistance(distanceKm!)}
                 </span>
               </>
             )}
