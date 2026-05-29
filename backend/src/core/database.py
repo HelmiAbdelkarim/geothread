@@ -1030,8 +1030,13 @@ def load_dummy_data() -> None:
     for user in users:
         for subreddit in subreddits[:4]:
             reddit_db.subscribe(user.user_id, subreddit.subreddit_id)
-    reddit_db.subscribe(users[0].user_id, subreddits[7].subreddit_id)
-    reddit_db.subscribe(users[5].user_id, subreddits[9].subreddit_id)
+    for user in users[:4]:  # Paris users
+        reddit_db.subscribe(user.user_id, subreddits[4].subreddit_id)   # ParisTech
+        reddit_db.subscribe(user.user_id, subreddits[7].subreddit_id)   # Paris
+    reddit_db.subscribe(users[4].user_id, subreddits[8].subreddit_id)   # alex → NYC
+    reddit_db.subscribe(users[5].user_id, subreddits[5].subreddit_id)   # maya → Seattle
+    reddit_db.subscribe(users[5].user_id, subreddits[6].subreddit_id)   # maya → SeattleFood
+    reddit_db.subscribe(users[5].user_id, subreddits[9].subreddit_id)   # maya → PacificNorthwest
 
     now = datetime.now()
     posts_data = [
@@ -1059,6 +1064,25 @@ def load_dummy_data() -> None:
          "I am visiting Seattle this weekend and want something better than the obvious tourist stops.", 75, 120, 8, 47.6097, -122.3425),
         (users[1], subreddits[7], "Meilleurs endroits à Paris pour coder",
          "Partagez vos cafés, bibliothèques, et spots calmes pour travailler sur des projets.", 95, 340, 22, 48.8462, 2.3449),
+        # ── Paris / Issy-les-Moulineaux posts (to demo geo radius filtering) ──
+        (users[0], subreddits[7], "Coworking à Issy-les-Moulineaux — guide 2025",
+         "Les meilleurs espaces de coworking à Issy pour les devs et startups. Bureaux équipés, wifi fibre, café à volonté.", 30, 285, 12, 48.8228, 2.2712),
+        (users[3], subreddits[7], "Marché de Vanves — vide-grenier tech ce dimanche",
+         "Quelqu'un va au marché de Vanves dimanche ? On m'a dit qu'il y avait des vieux PC, consoles et composants.", 90, 142, 5, 48.8215, 2.2985),
+        (users[1], subreddits[4], "ISEP alumni networking — soirée ce vendredi",
+         "ISEP organise une soirée networking pour les anciens et les actuels étudiants. Vendredi soir à partir de 19h.", 120, 198, 8, 48.8547, 2.3414),
+        (users[2], subreddits[7], "Boulogne-Billancourt devient le nouveau hub tech ouest-parisien",
+         "BoulBil attire de plus en plus de startups VC-backed depuis 2024. Voici pourquoi et où postuler.", 150, 320, 22, 48.8352, 2.2399),
+        (users[0], subreddits[4], "Spots wifi stables près de la Tour Eiffel pour coder",
+         "J'ai testé 5 cafés dans le 7ème arrondissement avec wifi stable et prises électriques. Voici le classement.", 75, 530, 15, 48.8584, 2.2945),
+        (users[3], subreddits[4], "Hackathon La Défense — 48h de code",
+         "Le prochain hackathon La Défense Tech aura lieu dans 3 semaines. Équipes de 3 à 5 personnes, lots à gagner.", 200, 410, 18, 48.8924, 2.2381),
+        (users[2], subreddits[4], "Meetup Montparnasse Tech — graph databases et LLMs",
+         "Le meetup mensuel reprend en présentiel. Au programme : retour d'expérience Neo4j et RAG avec LlamaIndex.", 300, 175, 7, 48.8424, 2.3218),
+        (users[1], subreddits[7], "Vincennes — nouvelle piste cyclable vers Paris",
+         "La piste cyclable reliant le bois de Vincennes au centre de Paris est enfin terminée. Idéale pour le vélo-boulot.", 60, 88, 4, 48.8483, 2.4392),
+        (users[2], subreddits[4], "Versailles tech park open day — startups bienvenues",
+         "Le parc technologique de Versailles organise ses portes ouvertes. Bonne opportunité de réseau hors Paris.", 1440, 62, 3, 48.8049, 1.7920),
     ]
 
     posts = []

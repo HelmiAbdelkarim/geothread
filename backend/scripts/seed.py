@@ -114,7 +114,13 @@ def seed(base: str) -> None:
     for user in users:
         for sub in subs[:4]:
             req(base, "POST", f"/subreddits/{sub['subreddit_id']}/subscribe", user_id=user["user_id"])
-    print(f"  ✓ all users subscribed to first 4 communities")
+    sub_by_name = {s["name"]: s for s in subs}
+    for user in users[:4]:  # Paris users
+        for name in ("ParisTech", "Paris"):
+            s = sub_by_name.get(name)
+            if s:
+                req(base, "POST", f"/subreddits/{s['subreddit_id']}/subscribe", user_id=user["user_id"])
+    print(f"  ✓ all users subscribed to core communities + Paris users to Paris/ParisTech")
 
     # ── Posts ──────────────────────────────────────────────────────────────
     print("\nCreating posts…")
@@ -141,6 +147,34 @@ def seed(base: str) -> None:
         (users[5], "webdev", "React Server Components finally make sense to me",
          "The useful mental model is two component trees with a serialization boundary.",
          47.6062, -122.3321),
+        # Paris / Issy-les-Moulineaux posts
+        (users[0], "Paris", "Coworking à Issy-les-Moulineaux — guide 2025",
+         "Les meilleurs espaces de coworking à Issy pour les devs et startups.",
+         48.8228, 2.2712),
+        (users[3], "Paris", "Marché de Vanves — vide-grenier tech ce dimanche",
+         "Quelqu'un va au marché de Vanves dimanche ? PC, consoles, composants.",
+         48.8215, 2.2985),
+        (users[1], "ParisTech", "ISEP alumni networking — soirée ce vendredi",
+         "Soirée networking pour anciens et actuels étudiants ISEP. Vendredi à 19h.",
+         48.8547, 2.3414),
+        (users[2], "Paris", "Boulogne-Billancourt devient le hub tech ouest-parisien",
+         "BoulBil attire de plus en plus de startups VC-backed depuis 2024.",
+         48.8352, 2.2399),
+        (users[0], "ParisTech", "Spots wifi stables près de la Tour Eiffel",
+         "5 cafés dans le 7ème avec wifi stable et prises. Classement complet.",
+         48.8584, 2.2945),
+        (users[3], "ParisTech", "Hackathon La Défense — 48h de code",
+         "Prochain hackathon La Défense Tech dans 3 semaines. Équipes de 3 à 5.",
+         48.8924, 2.2381),
+        (users[2], "ParisTech", "Meetup Montparnasse Tech — graph databases et LLMs",
+         "Meetup mensuel reprend en présentiel. Neo4j et RAG avec LlamaIndex.",
+         48.8424, 2.3218),
+        (users[1], "Paris", "Vincennes — nouvelle piste cyclable vers Paris",
+         "La piste cyclable bois de Vincennes — Paris centre est terminée.",
+         48.8483, 2.4392),
+        (users[2], "ParisTech", "Versailles tech park open day — startups bienvenues",
+         "Portes ouvertes du parc technologique de Versailles. Réseau hors Paris.",
+         48.8049, 1.7920),
     ]
     for author, sub_name, title, content, lat, lng in posts_data:
         sid = sub_map.get(sub_name)

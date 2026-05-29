@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Any
 
 from fastapi import APIRouter, Depends, Query
 
@@ -30,6 +30,11 @@ async def get_my_stats(user_id: int = Depends(get_current_user_id)):
     if not stats:
         raise NotFoundError("User stats not found.")
     return UserStatsResponse(**stats)
+
+
+@router.get("/me/subscriptions", response_model=List[int])
+async def get_my_subscriptions(user_id: int = Depends(get_current_user_id)):
+    return service.get_subscriptions(user_id)
 
 
 @router.put("/me/location", response_model=UserResponse)

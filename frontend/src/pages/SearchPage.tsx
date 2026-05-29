@@ -39,24 +39,24 @@ export default function SearchPage() {
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex items-center gap-2 bg-white border border-gray-200 rounded-md px-4 py-3">
-        <MagnifyingGlassIcon className="w-5 h-5 text-gray-400 shrink-0" />
-        <span className="text-sm text-gray-700">
-          {q ? <>Results for <strong>"{q}"</strong></> : 'Enter a search query'}
+      <div className="flex items-center gap-2 bg-[#1a1a1b] border border-[#343536] rounded-md px-4 py-3">
+        <MagnifyingGlassIcon className="w-5 h-5 text-[#818384] shrink-0" />
+        <span className="text-sm text-[#d7dadc]">
+          {q ? <>Results for <strong className="text-white">"{q}"</strong></> : 'Enter a search query'}
         </span>
       </div>
 
-      <div className="flex gap-1 bg-white border border-gray-200 rounded p-1">
+      <div className="flex gap-1 bg-[#1a1a1b] border border-[#343536] rounded p-1">
         {TABS.map(({ key, label, count }) => (
           <button
             key={key}
             onClick={() => setTab(key)}
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded text-sm font-medium transition-colors ${
-              tab === key ? 'bg-gray-100 text-gray-900' : 'text-gray-500 hover:bg-gray-50 hover:text-gray-800'
+              tab === key ? 'bg-[#272729] text-white' : 'text-[#818384] hover:bg-[#272729] hover:text-[#d7dadc]'
             }`}
           >
             {label}
-            <span className="text-xs text-gray-400">({count})</span>
+            <span className="text-xs text-[#818384]">({count})</span>
           </button>
         ))}
       </div>
@@ -86,13 +86,13 @@ export default function SearchPage() {
                 <Link
                   key={sub.subreddit_id}
                   to={`/r/${sub.name}`}
-                  className="flex items-center justify-between bg-white border border-gray-200 rounded px-4 py-3 hover:border-gray-400 transition-colors"
+                  className="flex items-center justify-between bg-[#1a1a1b] border border-[#343536] rounded px-4 py-3 hover:border-[#818384] transition-colors"
                 >
                   <div>
-                    <p className="text-sm font-semibold text-gray-900">r/{sub.name}</p>
-                    <p className="text-xs text-gray-500 line-clamp-1 mt-0.5">{sub.description}</p>
+                    <p className="text-sm font-semibold text-white">r/{sub.name}</p>
+                    <p className="text-xs text-[#818384] line-clamp-1 mt-0.5">{sub.description}</p>
                   </div>
-                  <span className="text-xs text-gray-400 shrink-0 ml-4">{sub.subscriber_count} members</span>
+                  <span className="text-xs text-[#818384] shrink-0 ml-4">{sub.subscriber_count} members</span>
                 </Link>
               ))}
             </section>
@@ -105,18 +105,18 @@ export default function SearchPage() {
                 <Link
                   key={user.user_id}
                   to={`/u/${user.username}`}
-                  className="flex items-center justify-between bg-white border border-gray-200 rounded px-4 py-3 hover:border-gray-400 transition-colors"
+                  className="flex items-center justify-between bg-[#1a1a1b] border border-[#343536] rounded px-4 py-3 hover:border-[#818384] transition-colors"
                 >
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8 rounded-full bg-gradient-to-br from-orange-400 to-pink-500 flex items-center justify-center text-white text-xs font-bold shrink-0">
                       {user.username.slice(0, 2).toUpperCase()}
                     </div>
                     <div>
-                      <p className="text-sm font-semibold text-gray-900">u/{user.username}</p>
-                      <p className="text-xs text-gray-400">Joined {timeAgo(user.created_at)}</p>
+                      <p className="text-sm font-semibold text-white">u/{user.username}</p>
+                      <p className="text-xs text-[#818384]">Joined {timeAgo(user.created_at)}</p>
                     </div>
                   </div>
-                  <span className="text-xs text-gray-400 shrink-0 ml-4">{user.total_karma ?? user.post_karma + user.comment_karma} karma</span>
+                  <span className="text-xs text-[#818384] shrink-0 ml-4">{user.total_karma ?? user.post_karma + user.comment_karma} karma</span>
                 </Link>
               ))}
             </section>

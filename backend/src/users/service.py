@@ -21,3 +21,8 @@ def get_stats(user_id: int) -> Optional[dict]:
 
 def update_location(user_id: int, location: Location) -> bool:
     return reddit_db.update_user_location(user_id, location)
+
+
+def get_subscriptions(user_id: int) -> list[int]:
+    subs = reddit_db.get_subscriptions(user_id)
+    return [s.subreddit_id for s in subs]

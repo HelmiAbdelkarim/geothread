@@ -29,7 +29,7 @@ export const posts: Post[] = [
     content: 'A deep dive into why Dijkstra breaks with negative edges and how Bellman-Ford handles it. The key issue is the greedy relaxation assumption.',
     timestamp: ago(45 * m), upvotes: 3420, downvotes: 180, comments: 142,
     image_url: 'https://images.unsplash.com/photo-1516116216624-53e697fedbea?w=960&q=80',
-    lat: 48.8584, lng: 2.2945, // Eiffel Tower ~0.7 km from centre
+    latitude: 48.8584, longitude: 2.2945, // Eiffel Tower ~0.7 km from centre
   },
   {
     post_id: 2, author_id: 2, subreddit_id: 2,
@@ -37,7 +37,7 @@ export const posts: Post[] = [
     content: 'For my algorithms class I implemented BFS, DFS, Dijkstra, and a priority-queue-based feed from scratch. Here is what I learned.',
     timestamp: ago(3 * h), upvotes: 1850, downvotes: 95, comments: 87,
     image_url: 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=960&q=80',
-    lat: 48.8867, lng: 2.3431, // Montmartre ~3.4 km
+    latitude: 48.8867, longitude: 2.3431, // Montmartre ~3.4 km
   },
   {
     post_id: 3, author_id: 3, subreddit_id: 3,
@@ -45,21 +45,21 @@ export const posts: Post[] = [
     content: 'Just migrated a large project. The new @import approach and Vite plugin are clean. CSS-first config is a big improvement.',
     timestamp: ago(12 * h), upvotes: 920, downvotes: 310, comments: 64,
     image_url: 'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=960&q=80',
-    lat: 48.8534, lng: 2.3332, // Saint-Germain ~0.4 km
+    latitude: 48.8534, longitude: 2.3332, // Saint-Germain ~0.4 km
   },
   {
     post_id: 4, author_id: 1, subreddit_id: 4,
     title: 'GeoThread ASNAP engine — first working demo',
     content: 'Feed sorting with hot/new/top/rising/controversial is live. Comment tree traversal next. All algorithms are raw Python, no libraries.',
     timestamp: ago(10 * m), upvotes: 8, downvotes: 1, comments: 3,
-    lat: 48.8574, lng: 2.3578, // Le Marais ~0.1 km
+    latitude: 48.8574, longitude: 2.3578, // Le Marais ~0.1 km
   },
   {
     post_id: 5, author_id: 4, subreddit_id: 1,
     title: 'Union-Find vs label propagation for community detection — which is better?',
     content: 'Both work. Union-Find is simpler and O(α(n)) amortized. Label propagation gives richer clusters but is harder to tune.',
     timestamp: ago(36 * h), upvotes: 610, downvotes: 580, comments: 201,
-    lat: 48.8924, lng: 2.2381, // La Défense ~9.4 km
+    latitude: 48.8924, longitude: 2.2381, // La Défense ~9.4 km
   },
   {
     post_id: 6, author_id: 5, subreddit_id: 5,
@@ -67,7 +67,7 @@ export const posts: Post[] = [
     content: 'Stack overflow is the obvious risk, but the real question is readability vs control. Here is my take after 10 years.',
     timestamp: ago(2 * h), upvotes: 2100, downvotes: 140, comments: 310,
     image_url: 'https://images.unsplash.com/photo-1504639725590-34d0984388bd?w=960&q=80',
-    lat: 48.8049, lng: 2.1204, // Versailles ~18 km
+    latitude: 48.8049, longitude: 2.1204, // Versailles ~18 km
   },
   {
     post_id: 7, author_id: 6, subreddit_id: 3,
@@ -75,7 +75,7 @@ export const posts: Post[] = [
     content: 'After months of confusion I finally get it. The key is thinking about the component tree as two separate trees that get merged.',
     timestamp: ago(5 * h), upvotes: 1430, downvotes: 210, comments: 95,
     image_url: 'https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=960&q=80',
-    lat: 48.8396, lng: 2.2456, // Boulogne ~11 km
+    latitude: 48.8396, longitude: 2.2456, // Boulogne ~11 km
   },
   {
     post_id: 8, author_id: 2, subreddit_id: 2,

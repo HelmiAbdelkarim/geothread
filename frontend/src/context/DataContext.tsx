@@ -16,6 +16,7 @@ interface DataContextType {
   sort: BackendSortStrategy
   userById: Map<number, Redditor>
   subredditById: Map<number, Subreddit>
+  subscribedIds: Set<number>
   setSort: (sort: BackendSortStrategy) => void
   refreshAll: () => Promise<void>
   refreshFeed: () => Promise<void>
@@ -35,6 +36,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
   const [users, setUsers] = useState<Redditor[]>([])
   const [recommendations, setRecommendations] = useState<SubredditRecommendation[]>([])
   const [stats, setStats] = useState<UserStats | null>(null)
+  const [subscribedIds, setSubscribedIds] = useState<Set<number>>(new Set())
   const [sort, setSort] = useState<BackendSortStrategy>('hot')
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -62,18 +64,21 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
       setSubreddits(nextSubreddits)
 
       if (currentUser) {
-        const [nextPosts, nextRecommendations, nextStats] = await Promise.all([
+        const [nextPosts, nextRecommendations, nextStats, nextSubIds] = await Promise.all([
           postService.getFeed(currentUser.user_id, sort, 100),
           subredditService.recommendations(currentUser.user_id),
           userService.getStats(currentUser.user_id),
+          userService.getSubscribedIds(currentUser.user_id),
         ])
         setPosts(nextPosts)
         setRecommendations(nextRecommendations)
         setStats(nextStats)
+        setSubscribedIds(new Set(nextSubIds))
       } else {
         setPosts([])
         setRecommendations([])
         setStats(null)
+        setSubscribedIds(new Set())
       }
 
       setError(null)
@@ -111,12 +116,14 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
   async function subscribe(subredditId: number) {
     if (!currentUser) throw new Error('Log in before joining a community.')
     await subredditService.subscribe(currentUser.user_id, subredditId)
+    setSubscribedIds(prev => new Set([...prev, subredditId]))
     await refreshAll()
   }
 
   async function unsubscribe(subredditId: number) {
     if (!currentUser) throw new Error('Log in before leaving a community.')
     await subredditService.unsubscribe(currentUser.user_id, subredditId)
+    setSubscribedIds(prev => { const next = new Set(prev); next.delete(subredditId); return next })
     await refreshAll()
   }
 
@@ -132,6 +139,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
       sort,
       userById,
       subredditById,
+      subscribedIds,
       setSort,
       refreshAll,
       refreshFeed,

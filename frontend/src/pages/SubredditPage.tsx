@@ -35,9 +35,8 @@ function formatCount(n: number): string {
 
 export default function SubredditPage() {
   const { subredditName } = useParams<{ subredditName: string }>()
-  const { subreddits, subscribe, unsubscribe } = useData()
+  const { subreddits, subscribe, unsubscribe, subscribedIds } = useData()
   const navigate = useNavigate()
-  const [joined, setJoined] = useState(false)
   const [sort, setSort] = useState<SortStrategy>('hot')
   const [visible, setVisible] = useState(PAGE_SIZE)
   const [posts, setPosts] = useState<Post[]>([])
@@ -45,6 +44,7 @@ export default function SubredditPage() {
   const [error, setError] = useState('')
 
   const subreddit = subreddits.find(s => s.name.toLowerCase() === (subredditName ?? '').toLowerCase())
+  const joined = !!(subreddit && subscribedIds.has(subreddit.subreddit_id))
 
   useEffect(() => {
     if (!subreddit) return
@@ -60,13 +60,8 @@ export default function SubredditPage() {
   async function toggleJoined() {
     if (!subreddit) return
     try {
-      if (joined) {
-        await unsubscribe(subreddit.subreddit_id)
-        setJoined(false)
-      } else {
-        await subscribe(subreddit.subreddit_id)
-        setJoined(true)
-      }
+      if (joined) await unsubscribe(subreddit.subreddit_id)
+      else await subscribe(subreddit.subreddit_id)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to update subscription.')
     }
@@ -125,13 +120,13 @@ export default function SubredditPage() {
         </div>
       </div>
 
-      <div className="flex gap-1 bg-white border border-gray-200 rounded p-1 mb-4">
+      <div className="flex gap-1 bg-[#1a1a1b] border border-[#343536] rounded p-1 mb-4">
         {SORTS.map(({ key, label, icon }) => (
           <button
             key={key}
             onClick={() => { setSort(key); setVisible(PAGE_SIZE) }}
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded text-sm font-medium transition-colors ${
-              sort === key ? 'bg-gray-100 text-gray-900' : 'text-gray-500 hover:bg-gray-50 hover:text-gray-800'
+              sort === key ? 'bg-[#272729] text-white' : 'text-[#818384] hover:bg-[#272729] hover:text-[#d7dadc]'
             }`}
           >
             {icon}{label}

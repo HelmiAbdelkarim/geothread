@@ -139,13 +139,13 @@ export default function FeedPage() {
         </div>
       )}
 
-      <div className="flex gap-1 bg-white border border-gray-200 rounded p-1">
+      <div className="flex gap-1 bg-[#1a1a1b] border border-[#343536] rounded p-1">
         {SORTS.map(({ key, label, icon }) => (
           <button
             key={key}
             onClick={() => handleSortChange(key)}
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded text-sm font-medium transition-colors ${
-              sort === key ? 'bg-gray-100 text-gray-900' : 'text-gray-500 hover:bg-gray-50 hover:text-gray-800'
+              sort === key ? 'bg-[#272729] text-white' : 'text-[#818384] hover:bg-[#272729] hover:text-[#d7dadc]'
             }`}
           >
             {icon}{label}
