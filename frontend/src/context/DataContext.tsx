@@ -19,7 +19,7 @@ interface DataContextType {
   setSort: (sort: BackendSortStrategy) => void
   refreshAll: () => Promise<void>
   refreshFeed: () => Promise<void>
-  addPost: (subredditId: number, title: string, content: string) => Promise<Post>
+  addPost: (subredditId: number, title: string, content: string, latitude?: number, longitude?: number) => Promise<Post>
   addSubreddit: (name: string, description: string) => Promise<Subreddit>
   votePost: (postId: number, direction: 'up' | 'down' | 'remove') => Promise<void>
   subscribe: (subredditId: number) => Promise<void>
@@ -88,9 +88,9 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
     refreshAll()
   }, [refreshAll])
 
-  async function addPost(subredditId: number, title: string, content: string) {
+  async function addPost(subredditId: number, title: string, content: string, latitude?: number, longitude?: number) {
     if (!currentUser) throw new Error('Log in before creating a post.')
-    const post = await postService.create(currentUser.user_id, subredditId, title, content)
+    const post = await postService.create(currentUser.user_id, subredditId, title, content, latitude, longitude)
     await refreshAll()
     return post
   }

@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import { XMarkIcon, PhotoIcon } from '@heroicons/react/24/outline'
+import { XMarkIcon, PhotoIcon, MapPinIcon } from '@heroicons/react/24/outline'
 import { useData } from '../../context/DataContext'
 import { useAuth } from '../../context/AuthContext'
 
@@ -14,6 +14,11 @@ export default function CreatePostModal({ onClose }: Props) {
   const [body, setBody] = useState('')
   const [imageUrl, setImageUrl] = useState('')
   const [subredditId, setSubredditId] = useState(subreddits[0]?.subreddit_id ?? 1)
+  const [tagLocation, setTagLocation] = useState(false)
+  const [locLat, setLocLat] = useState<number | null>(null)
+  const [locLng, setLocLng] = useState<number | null>(null)
+  const [locLoading, setLocLoading] = useState(false)
+  const [locError, setLocError] = useState<string | null>(null)
   const [error, setError] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const backdropRef = useRef<HTMLDivElement>(null)
@@ -24,6 +29,35 @@ export default function CreatePostModal({ onClose }: Props) {
     return () => window.removeEventListener('keydown', onKey)
   }, [onClose])
 
+  function toggleLocation() {
+    if (tagLocation) {
+      setTagLocation(false)
+      setLocLat(null)
+      setLocLng(null)
+      setLocError(null)
+      return
+    }
+    if (!navigator.geolocation) {
+      setLocError('Geolocation not supported by your browser.')
+      return
+    }
+    setLocLoading(true)
+    setLocError(null)
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        setLocLat(pos.coords.latitude)
+        setLocLng(pos.coords.longitude)
+        setTagLocation(true)
+        setLocLoading(false)
+      },
+      (err) => {
+        setLocError(err.message)
+        setLocLoading(false)
+      },
+      { enableHighAccuracy: false, timeout: 8000 },
+    )
+  }
+
   async function handleSubmit() {
     if (!title.trim()) return
     if (!currentUser) {
@@ -33,7 +67,13 @@ export default function CreatePostModal({ onClose }: Props) {
     setSubmitting(true)
     try {
       const imageLine = imageUrl.trim() ? `\n\nImage: ${imageUrl.trim()}` : ''
-      await addPost(subredditId, title.trim(), `${body.trim()}${imageLine}`.trim())
+      await addPost(
+        subredditId,
+        title.trim(),
+        `${body.trim()}${imageLine}`.trim(),
+        tagLocation && locLat != null ? locLat : undefined,
+        tagLocation && locLng != null ? locLng : undefined,
+      )
       onClose()
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to create post.')
@@ -98,6 +138,33 @@ export default function CreatePostModal({ onClose }: Props) {
             />
           </div>
 
+          {/* Location tag */}
+          <div className="flex items-center justify-between bg-[#272729] border border-[#343536] rounded px-3 py-2">
+            <div className="flex items-center gap-2 min-w-0">
+              <MapPinIcon className={`w-4 h-4 shrink-0 ${tagLocation ? 'text-orange-400' : 'text-[#818384]'}`} />
+              <span className="text-xs text-[#d7dadc] truncate">
+                {tagLocation && locLat != null
+                  ? `${locLat.toFixed(4)}, ${locLng?.toFixed(4)}`
+                  : 'Tag my location'}
+              </span>
+              {locError && <span className="text-xs text-red-400 truncate">{locError}</span>}
+            </div>
+            <button
+              type="button"
+              onClick={toggleLocation}
+              disabled={locLoading}
+              className={`relative inline-flex h-5 w-9 shrink-0 rounded-full transition-colors duration-200 ml-3 ${
+                tagLocation ? 'bg-orange-500' : 'bg-[#343536]'
+              } disabled:opacity-50`}
+            >
+              <span
+                className={`inline-block h-4 w-4 mt-0.5 rounded-full bg-white shadow transition-transform duration-200 ${
+                  tagLocation ? 'translate-x-4' : 'translate-x-0.5'
+                }`}
+              />
+            </button>
+          </div>
+
           {error && <p className="text-xs text-red-400">{error}</p>}
 
           <div className="flex justify-end gap-2 pt-1">
@@ -109,7 +176,7 @@ export default function CreatePostModal({ onClose }: Props) {
               disabled={!title.trim() || submitting}
               className="px-5 py-1.5 text-sm font-semibold rounded-full bg-orange-500 hover:bg-orange-600 text-white disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
             >
-              {submitting ? 'Posting...' : 'Post'}
+              {submitting ? 'Posting…' : 'Post'}
             </button>
           </div>
         </div>

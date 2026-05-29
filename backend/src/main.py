@@ -9,6 +9,7 @@ from src.comments.router import router as comments_router
 from src.core.config import get_settings
 from src.core.database import load_dummy_data
 from src.posts.router import router as posts_router
+from src.search.router import router as search_router
 from src.subreddits.router import router as subreddits_router
 from src.users.router import router as users_router
 
@@ -45,6 +46,7 @@ def create_app() -> FastAPI:
     app.include_router(posts_router)
     app.include_router(comments_router)
     app.include_router(subreddits_router)
+    app.include_router(search_router)
 
     return app
 
