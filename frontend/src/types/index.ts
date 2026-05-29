@@ -59,9 +59,8 @@ export interface Post {
   subreddit_name?: string
   user_vote?: number
   image_url?: string
-  latitude?: number
-  longitude?: number
-  distance_km?: number
+  lat?: number
+  lng?: number
 }
 
 export interface Comment {

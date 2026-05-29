@@ -18,7 +18,6 @@ export default function Navbar({ onCreatePost, onShowLogin }: Props) {
   const { currentUser, logout } = useAuth()
   const navigate = useNavigate()
   const [showMenu, setShowMenu] = useState(false)
-  const [query, setQuery] = useState('')
   const menuRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -28,13 +27,6 @@ export default function Navbar({ onCreatePost, onShowLogin }: Props) {
     document.addEventListener('mousedown', handler)
     return () => document.removeEventListener('mousedown', handler)
   }, [])
-
-  function handleSearch(e: React.FormEvent) {
-    e.preventDefault()
-    const q = query.trim()
-    if (!q) return
-    navigate(`/search?q=${encodeURIComponent(q)}`)
-  }
 
   const initials = currentUser?.username.slice(0, 2).toUpperCase()
 
@@ -46,18 +38,16 @@ export default function Navbar({ onCreatePost, onShowLogin }: Props) {
           geothread
         </Link>
 
-        <form onSubmit={handleSearch} className="flex-1 max-w-xl mx-auto">
+        <div className="flex-1 max-w-xl mx-auto">
           <div className="flex items-center bg-[#272729] border border-[#343536] hover:border-[#818384] focus-within:border-white rounded-full px-3 h-9 gap-2 transition-colors">
             <MagnifyingGlassIcon className="w-4 h-4 text-[#818384] shrink-0" />
             <input
               type="text"
-              value={query}
-              onChange={e => setQuery(e.target.value)}
-              placeholder="Search GeoThread"
+              placeholder="Find anything"
               className="flex-1 bg-transparent text-sm text-white placeholder-[#818384] outline-none"
             />
           </div>
-        </form>
+        </div>
 
         <div className="flex items-center gap-1 shrink-0">
           <button

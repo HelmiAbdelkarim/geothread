@@ -932,22 +932,6 @@ class RedditSystem:
         return self.recommendation_engine.recommend(user_id, limit)
 
     # -------------------------------------------------------------------------
-    # Search
-    # -------------------------------------------------------------------------
-
-    def search_posts(self, query: str, limit: int) -> List[Post]:
-        q = query.lower()
-        return [p for p in self.posts.values() if q in p.title.lower() or q in p.content.lower()][:limit]
-
-    def search_subreddits(self, query: str, limit: int) -> List[Subreddit]:
-        q = query.lower()
-        return [s for s in self.subreddits.values() if q in s.name.lower() or q in s.description.lower()][:limit]
-
-    def search_users(self, query: str, limit: int) -> List[Redditor]:
-        q = query.lower()
-        return [u for u in self.users.get_all() if q in u.username.lower()][:limit]
-
-    # -------------------------------------------------------------------------
     # Private helpers
     # -------------------------------------------------------------------------
 
